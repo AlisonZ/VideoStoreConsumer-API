@@ -10,12 +10,9 @@ class Movie < ApplicationRecord
 
   def image_url
       orig_value = read_attribute :image_url
-    #   why doesn't external work for the elsif condition??????
-    #   external = read_attribute :external_id
       if !orig_value
           MovieWrapper::DEFAULT_IMG_URL
-    #   elsif external == null
-      elsif orig_value[0] == "/"
+      elsif external_id
           MovieWrapper.construct_image_url(orig_value)
       else
           orig_value
