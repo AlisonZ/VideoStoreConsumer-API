@@ -22,13 +22,26 @@ class MoviesController < ApplicationController
   end
 
   def create
-    movie = Movie.create(movie_params)
-    if movie.id
-        render status: :ok, json:{
-            id: movie.id
+    existing_movie = Movie.find_by(title: params["title"])
+    if existing_movie
+      puts existing_movie
+      existing_movie.inventory += 1
+      if existing_movie.save
+        render status: :ok, json: {
+          id: existing_movie.id
         }
+      else
+        render status: :bad_request, json: {errors: 'could not add movie'}
+      end
     else
-        render status: :bad_request, json: {errors: 'could not create movie'}
+      new_movie = Movie.create(movie_params)
+      if new_movie.id
+          render status: :ok, json:{
+              id: new_movie.id
+          }
+      else
+          render status: :bad_request, json: {errors: 'could not create movie'}
+      end
     end
   end
 
